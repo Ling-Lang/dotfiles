@@ -13,12 +13,14 @@ env:
   TERM: alacritty
   LANG: "en_US.UTF-8"
   LC_CTYPE: en_US.UTF-8
-  #window:
+window:
   # Window background opacity
   #
   # Specified in floating number from `0.0` to `1.0`.
   # The value `0.0` is completely transparent and `1.0` is opaque.
-  #opacity: 1.0
+  opacity: 0.6
+
+
   # Window dimensions (changes require restart)
   #
   # Specified in number of columns/lines, not pixels.
@@ -79,7 +81,7 @@ env:
   # Maximum number of lines in the scrollback buffer.
   # Specifying '0' will disable scrolling.
   #history: 10000
-  # Number of lines the viewport will move for every line scrolled when
+  # Number of lines te viewport will move for every line scrolled when
   # scrollback is enabled (history > 0).
   #multiplier: 3
 
@@ -93,7 +95,7 @@ font:
     #   - (macOS) Menlo
     #   - (Linux/BSD) monospace
     #   - (Windows) Consolas
-    family: "monospace"
+    family: "Fira Code"
 
     # The `style` can be specified to pick a specific face.
     style: Regular
@@ -186,3 +188,6 @@ colors:
     cyan: '#89ddff'
     white: '#ffffff' # Arbitrary
 theme: Material-Theme
+cursor:
+  style:
+    shape: Beam
