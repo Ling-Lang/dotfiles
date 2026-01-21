@@ -1,6 +1,3 @@
--- ==========================================
--- 1. PLUGINS (vim-plug)
--- ==========================================
 local Plug = vim.fn['plug#']
 
 vim.call('plug#begin')
@@ -17,77 +14,77 @@ vim.call('plug#begin')
 vim.call('plug#end')
 
 -- ==========================================
--- 2. NVIM-TREE SETUP (WICHTIG!)
--- ==========================================
--- ==========================================
--- 5. NVIM-TREE SETUP (MIT H/L NAVIGATION)
--- ==========================================
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
-vim.opt.clipboard:append('unnamedplus')
--- Diese Funktion definiert die Tastenbelegung
-local function my_on_attach(bufnr)
-  local api = require "nvim-tree.api"
-
-  local function opts(desc)
-    return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
-  end
-
-  -- 1. Standard-Tasten laden (damit 'd' löschen, 'r' umbenennen usw. noch geht)
-  api.config.mappings.default_on_attach(bufnr)
-
-  -- 2. Eigene Tasten hinzufügen
-  vim.keymap.set('n', 'l', api.node.open.edit, opts('Open'))
-  vim.keymap.set('n', 'h', api.node.navigate.parent_close, opts('Close Directory'))
-  vim.keymap.set('n', '<CR>', api.node.open.edit, opts('Open')) -- Enter bleibt auch aktiv
-end
-
--- Setup aufrufen
-require("nvim-tree").setup({
-  on_attach = my_on_attach, -- Hier binden wir die Funktion ein
-  sort = { sorter = "case_sensitive" },
-  view = { width = 30 },
-  renderer = { group_empty = true },
-})
-
--- Tastenkürzel global: Strg+n öffnet den Tree
-vim.keymap.set('n', '<C-n>', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
-
-
-require('lualine').setup {
-  options = {
-    theme = 'catppuccin-macchiato', -- Hier setzen wir das Theme direkt
-    component_separators = '|',
-    section_separators = { left = '', right = '' },
-  },
-  sections = {
-    lualine_a = {
-      { 'mode', separator = { left = '' }, right_padding = 2 },
-    },
-    lualine_b = { 'filename', 'branch' },
-    lualine_c = { 'fileformat' },
-    lualine_x = {},
-    lualine_y = { 'filetype', 'progress' },
-    lualine_z = {
-      { 'location', separator = { right = '' }, left_padding = 2 },
-    },
-  },
-}
-
--- TASTENKÜRZEL: Strg + n öffnet/schließt den Tree
-vim.keymap.set('n', '<C-n>', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
-
--- ==========================================
--- 3. SONSTIGE EINSTELLUNGEN
+-- 3. SONSTIGE EINSTELLUNGEN (Nach oben verschoben, damit Basics immer gehen)
 -- ==========================================
 vim.opt.number = true
 vim.cmd("syntax on")
-vim.opt.termguicolors = true -- Wichtig für Icons Farben
+vim.opt.termguicolors = true
+vim.opt.clipboard:append('unnamedplus')
 
--- Airline Konfiguration
+-- ==========================================
+-- 2. NVIM-TREE SETUP (GESCHÜTZT)
+-- ==========================================
+-- Wir versuchen nvim-tree zu laden. Wenn es fehlschlägt (weil noch nicht installiert),
+-- brechen wir diesen Block ab, damit PlugInstall laufen kann.
+local status_tree, nvim_tree = pcall(require, "nvim-tree")
 
--- Theme aktivieren
-local status_ok, _ = pcall(vim.cmd, "colorscheme catppuccin-macchiato")
-if not status_ok then
-    print("Info: Farbschema 'onedark' nicht gefunden (evtl. :PlugInstall ausführen)")
+if not status_tree then
+    print("Info: nvim-tree nicht gefunden (wird installiert...)")
+else
+    -- ALLES was nvim-tree betrifft kommt HIER rein
+    vim.g.loaded_netrw = 1
+    vim.g.loaded_netrwPlugin = 1
+
+    local function my_on_attach(bufnr)
+        local api = require "nvim-tree.api"
+        local function opts(desc)
+            return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+        end
+        api.config.mappings.default_on_attach(bufnr)
+        vim.keymap.set('n', 'l', api.node.open.edit, opts('Open'))
+        vim.keymap.set('n', 'h', api.node.navigate.parent_close, opts('Close Directory'))
+        vim.keymap.set('n', '<CR>', api.node.open.edit, opts('Open'))
+    end
+
+    nvim_tree.setup({
+        on_attach = my_on_attach,
+        sort = { sorter = "case_sensitive" },
+        view = { width = 30 },
+        renderer = { group_empty = true },
+    })
+
+    -- Tastenkürzel nur setzen, wenn Plugin da ist
+    vim.keymap.set('n', '<C-n>', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
+end
+
+-- ==========================================
+-- LUALINE SETUP (GESCHÜTZT)
+-- ==========================================
+local status_lualine, lualine = pcall(require, "lualine")
+if not status_lualine then
+     print("Info: lualine nicht gefunden (wird installiert...)")
+else
+    lualine.setup {
+        options = {
+            theme = 'catppuccin-macchiato',
+            component_separators = '|',
+            section_separators = { left = '', right = '' },
+        },
+        sections = {
+            lualine_a = { { 'mode', separator = { left = '' }, right_padding = 2 }, },
+            lualine_b = { 'filename', 'branch' },
+            lualine_c = { 'fileformat' },
+            lualine_x = {},
+            lualine_y = { 'filetype', 'progress' },
+            lualine_z = { { 'location', separator = { right = '' }, left_padding = 2 }, },
+        },
+    }
+end
+
+-- ==========================================
+-- THEME SETUP
+-- ==========================================
+local status_theme, _ = pcall(vim.cmd, "colorscheme catppuccin-macchiato")
+if not status_theme then
+    print("Info: Farbschema nicht gefunden (wird installiert...)")
 end

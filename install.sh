@@ -33,6 +33,17 @@ install_zsh_plugin() {
 install_zsh_plugin "zsh-autosuggestions" "https://github.com/zsh-users/zsh-autosuggestions"
 install_zsh_plugin "zsh-syntax-highlighting" "https://github.com/zsh-users/zsh-syntax-highlighting.git"
 
+# --- Neovim Plugin Manager (vim-plug) ---
+VIM_PLUG_FILE="${XDG_DATA_HOME:-$HOME/.local/share}/nvim/site/autoload/plug.vim"
+
+if [ ! -f "$VIM_PLUG_FILE" ]; then
+    echo_info "Installiere vim-plug für Neovim..."
+    curl -fLo "$VIM_PLUG_FILE" --create-dirs \
+        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+else
+    echo_success "vim-plug ist bereits installiert."
+fi
+
 # --- 4. Dotfiles verlinken (Stow) ---
 echo_info "Verlinke Dotfiles mit Stow..."
 
@@ -44,5 +55,8 @@ cd "$(dirname "$0")"
 stow nvim
 stow tmux
 stow zsh
-
-echo_success "Installation abgeschlossen! Bitte starte zsh neu."
+echo_info "Installiere Neovim Plugins..."
+# Startet nvim headless, führt PlugInstall aus und beendet sich wieder
+nvim --headless +PlugInstall +qall
+echo_success "Installation abgeschlossen!"
+exec zsh -l
