@@ -11,3 +11,23 @@ fi
 if [[ "$TERM_PROGRAM" == "tmux" ]]; then
 	export TERM="xterm-256color"
 fi
+if [[ "$HOST" == "dylanMain" ]]; then
+	export XDG_RUNTIME_DIR=/tmp/discord-ipc
+	NPIPERELAY="/mnt/c/tools/npiperelay.exe"
+	if [ -f "$NPIPERELAY" ]; then
+    		# Prüfen ob socat installiert ist
+    		if command -v socat &> /dev/null; then
+        		# Verzeichnis erstellen
+        		mkdir -p "$XDG_RUNTIME_DIR"
+        
+        		# Prüfen ob die Brücke schon läuft, wenn nicht: starten
+        		if ! pgrep -f "npiperelay.exe" > /dev/null; then
+            			# Alte Sockets aufräumen
+            			rm -f "$XDG_RUNTIME_DIR/discord-ipc-0"
+            
+            			# Brücke im Hintergrund starten (stummgeschaltet)
+            			(socat UNIX-LISTEN:"$XDG_RUNTIME_DIR/discord-ipc-0",fork,mode=777 EXEC:"$NPIPERELAY -ep -s //./pipe/discord-ipc-0",nofork &) > /dev/null 2>&1
+        		fi
+    		fi
+	fi
+fi

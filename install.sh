@@ -3,11 +3,32 @@
 # --- 1. Helfer-Funktionen ---
 echo_info() { echo -e "\033[34m[INFO]\033[0m $1"; }
 echo_success() { echo -e "\033[32m[OK]\033[0m $1"; }
+echo_warn() { echo -e "\033[33m[WARN]\033[0m $1"; }
+
+# Funktion zum Backup existierender Dateien
+backup_file() {
+    local file="$1"
+    if [ -e "$file" ] && [ ! -L "$file" ]; then
+        # Nur backuppen, wenn es eine echte Datei ist (kein Symlink)
+        # Wenn es schon ein Symlink ist, wird er von Stow meistens einfach überschrieben/angepasst
+        local timestamp=$(date +%Y%m%d_%H%M%S)
+        local backup_name="${file}.backup.${timestamp}"
+        
+        echo_warn "Datei $file existiert bereits und ist kein Symlink."
+        echo_info "Erstelle Backup unter: $backup_name"
+        mv "$file" "$backup_name"
+    elif [ -L "$file" ]; then
+        # Optional: Wenn ein falscher Symlink existiert, diesen entfernen, damit Stow sauber arbeiten kann
+        echo_info "Entferne alten Symlink $file, um Konflikte zu vermeiden."
+        rm "$file"
+    fi
+}
 
 # --- 2. Oh My Zsh prüfen ---
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
     echo_info "Oh My Zsh nicht gefunden. Installiere es..."
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+    # WICHTIG: --keep-zshrc verhindert, dass OMZ deine .zshrc sofort mit einem Template überschreibt
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
 else
     echo_success "Oh My Zsh ist bereits installiert."
 fi
@@ -29,7 +50,6 @@ install_zsh_plugin() {
     fi
 }
 
-# Deine Pluginsliste:
 install_zsh_plugin "zsh-autosuggestions" "https://github.com/zsh-users/zsh-autosuggestions"
 install_zsh_plugin "zsh-syntax-highlighting" "https://github.com/zsh-users/zsh-syntax-highlighting.git"
 
@@ -50,13 +70,20 @@ echo_info "Verlinke Dotfiles mit Stow..."
 # Stelle sicher, dass wir im richtigen Ordner sind
 cd "$(dirname "$0")"
 
-# Führe Stow für alle Pakete aus (ignorier das Script selbst und .git)
-# Hier explizit deine Pakete nennen:
+# === NEU: Backup Logik vor dem Stowing ===
+# Da Stow abbricht, wenn .zshrc eine echte Datei ist, verschieben wir sie vorher.
+# Oh My Zsh erstellt oft eine Default .zshrc, die wir hier beiseite schaffen.
+backup_file "$HOME/.zshrc"
+# Falls du auch eine existierende .p10k.zsh oder tmux.conf hast, kannst du das hier auch machen:
+# backup_file "$HOME/.tmux.conf" 
+
 stow nvim
 stow tmux
 stow zsh
+
 echo_info "Installiere Neovim Plugins..."
 # Startet nvim headless, führt PlugInstall aus und beendet sich wieder
 nvim --headless +PlugInstall +qall
+
 echo_success "Installation abgeschlossen!"
 exec zsh -l

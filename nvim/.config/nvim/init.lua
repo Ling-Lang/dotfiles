@@ -1,5 +1,5 @@
 local Plug = vim.fn['plug#']
-
+local hostname = vim.fn.hostname()
 vim.call('plug#begin')
     Plug 'https://github.com/vim-syntastic/syntastic'
     Plug 'https://github.com/joshdick/onedark.vim'
@@ -11,6 +11,9 @@ vim.call('plug#begin')
     -- Das neue nvim-tree Plugin (benötigt Neovim 0.9+)
     Plug 'nvim-tree/nvim-tree.lua'
     Plug 'nvim-tree/nvim-web-devicons' -- Icons für Dateien
+    if hostname == "dylanMain" then
+    	vim.fn['plug#']('vyfor/cord.nvim')
+    end
 vim.call('plug#end')
 
 -- ==========================================
@@ -80,7 +83,14 @@ else
         },
     }
 end
-
+local cord = pcall(require, "cord")
+if not cord then
+	print("Info: Cord nicht gefunden (wird installiert...)")
+else
+	if hostname == "dylanMain" then
+    		require('cord').setup({})
+	end
+end
 -- ==========================================
 -- THEME SETUP
 -- ==========================================
