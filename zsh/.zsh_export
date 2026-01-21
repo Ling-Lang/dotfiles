@@ -1,0 +1,13 @@
+#Only apply proxy if on work device
+if [[ "$HOST" == "SIT-SDELAP691" ]]; then
+	sudo service cntlm start
+	export HTTP_PROXY=http://localhost:3128
+	export HTTPS_PROXY=$HTTP_PROXY
+	export http_proxy=$HTTP_PROXY
+	export https_proxy=$HTTPS_PROXY
+	export PATH="$PATH:/home/kulka/.local/bin"
+fi
+#set color if on tmux
+if [[ "$TERM_PROGRAM" == "tmux" ]]; then
+	export TERM="xterm-256color"
+fi
