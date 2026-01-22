@@ -8,6 +8,9 @@ vim.call('plug#begin')
     Plug 'nvim-lualine/lualine.nvim'
     Plug 'nvim-tree/nvim-web-devicons'
     Plug 'catppuccin/nvim'
+    Plug('neoclide/coc.nvim', {branch='release'})
+    Plug('nvim-treesitter/nvim-treesitter', {['do'] = ':TSUpdate'})
+    Plug 'abecodes/tabout.nvim'
     -- Das neue nvim-tree Plugin (benötigt Neovim 0.9+)
     Plug 'nvim-tree/nvim-tree.lua'
     Plug 'nvim-tree/nvim-web-devicons' -- Icons für Dateien
@@ -19,11 +22,22 @@ vim.call('plug#end')
 -- ==========================================
 -- 3. SONSTIGE EINSTELLUNGEN (Nach oben verschoben, damit Basics immer gehen)
 -- ==========================================
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
 vim.opt.number = true
 vim.cmd("syntax on")
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.expandtab = true
+vim.opt.softtabstop = 4
 vim.opt.termguicolors = true
 vim.opt.clipboard:append('unnamedplus')
-
+vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
+vim.keymap.set('n', '<leader>w', '<cmd>set wrap!<CR>', { silent = true })
+vim.keymap.set("n", "<leader>r", function()
+    vim.cmd("source $MYVIMRC")
+    print("Neovim Config wurde neu geladen!")
+end, { silent = true })
 -- ==========================================
 -- 2. NVIM-TREE SETUP (GESCHÜTZT)
 -- ==========================================
@@ -57,7 +71,7 @@ else
     })
 
     -- Tastenkürzel nur setzen, wenn Plugin da ist
-    vim.keymap.set('n', '<C-n>', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
+    vim.keymap.set('n', '<leader>q', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
 end
 
 -- ==========================================
@@ -91,7 +105,10 @@ else
     		require('cord').setup({})
 	end
 end
--- ==========================================
+local opts = {silent = true, noremap = true, expr = true, replace_keycodes = false}
+
+-- Mapping für TAB
+vim.keymap.set("i", "<TAB>", 'coc#pum#visible() ? coc#pum#confirm() : "<TAB>"', opts)
 -- THEME SETUP
 -- ==========================================
 local status_theme, _ = pcall(vim.cmd, "colorscheme catppuccin-macchiato")

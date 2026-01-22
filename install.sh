@@ -64,6 +64,9 @@ else
     echo_success "vim-plug ist bereits installiert."
 fi
 
+echo_info "Installiere tpm für tmux..."
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+
 # --- 4. Dotfiles verlinken (Stow) ---
 echo_info "Verlinke Dotfiles mit Stow..."
 
