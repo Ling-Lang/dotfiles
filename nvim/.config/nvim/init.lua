@@ -72,6 +72,7 @@ else
 
     -- Tastenkürzel nur setzen, wenn Plugin da ist
     vim.keymap.set('n', '<leader>q', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
+    vim.keymap.set('n', '<leader>e', ':NvimTreeFindFile<CR>', { silent = true })
 end
 
 -- ==========================================
