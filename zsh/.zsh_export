@@ -1,11 +1,14 @@
 #Only apply proxy if on work device
-if [[ "$HOST" == "SIT-SDELAP691" ]]; then
+if [[ "$HOST" == "SIT-SDELAP6912" ]]; then
 	sudo service cntlm start
 	export HTTP_PROXY=http://localhost:3128
 	export HTTPS_PROXY=$HTTP_PROXY
 	export http_proxy=$HTTP_PROXY
 	export https_proxy=$HTTPS_PROXY
 	export PATH="$PATH:/home/kulka/.local/bin"
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 fi
 #set color if on tmux
 if [[ "$TERM_PROGRAM" == "tmux" ]]; then
