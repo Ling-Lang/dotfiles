@@ -83,7 +83,7 @@ backup_file "$HOME/.zshrc"
 stow nvim
 stow tmux
 stow zsh
-
+stow tmux-powerline
 echo_info "Installiere Neovim Plugins..."
 # Startet nvim headless, führt PlugInstall aus und beendet sich wieder
 nvim --headless +PlugInstall +qall
