@@ -11,9 +11,9 @@ if [[ "$HOST" == "SIT-SDELAP6912" ]]; then
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 fi
 #set color if on tmux
-if [[ "$TERM_PROGRAM" == "tmux" ]]; then
-	export TERM="xterm-256color"
-fi
+#if [[ "$TERM_PROGRAM" == "tmux" ]]; then
+#	export TERM="xterm-256color"
+#fi
 if [[ "$HOST" == "dylanMain" ]]; then
 	export XDG_RUNTIME_DIR=/tmp/discord-ipc
 	NPIPERELAY="/mnt/c/tools/npiperelay.exe"
