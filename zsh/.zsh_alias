@@ -1,4 +1,3 @@
-alias q=clear
 alias sc="nvim $HOME/.zshrc && nvim $HOME/.zsh_alias && nvim $HOME/.zsh_export && source $HOME/.zshrc"
 alias ls="eza"
 alias lt="eza --tree"
