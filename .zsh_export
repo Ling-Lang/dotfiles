@@ -1,0 +1,62 @@
+#Only apply proxy if on work device
+if [[ "$HOST" == "SIT-SDELAP6912" ]]; then
+	sudo service cntlm start
+	export HTTP_PROXY=http://localhost:3128
+	export HTTPS_PROXY=$HTTP_PROXY
+	export http_proxy=$HTTP_PROXY
+	export https_proxy=$HTTPS_PROXY
+	export PATH="$PATH:/home/kulka/.local/bin"
+    export NVM_DIR="$HOME/.nvm"
+    export DOCKER_API_VERSION=1.44
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+    if command -v keychain >/dev/null 2>&1; then
+        # Ersetze 'id_ed25519' durch den Namen deines SSH-Keys (z.B. id_rsa)
+        eval $(keychain --eval --agents ssh --quiet authentik_25519)
+    fi
+    unalias q 2>/dev/null
+    q() {
+        # Leert das Terminal
+        command clear
+        
+        # Zsh's 'print -P' für schicke Formatierungen:
+        # %F{Farbe} = Textfarbe setzen | %f = Farbe zurücksetzen
+        # %B = Fett (Bold)             | %b = Fett zurücksetzen
+        # %F{240} = Ein dezentes Grau für die Erklärungen
+
+        print -P "%F{blue}╭──────────────────────────────────────────────────────╮%f"
+        print -P "%F{blue}│%f  %B%F{cyan}COMMON COMMANDS%f%b                                     %F{blue}│%f"
+        print -P "%F{blue}├──────────────────────────────────────────────────────┤%f"
+        print -P "%F{blue}│%f %B%F{yellow}Git%f%b                                                  %F{blue}│%f"
+        print -P "%F{blue}│%f   %F{green}git switch -c <name>%f  %F{240}- Neuen Branch erstellen%f     %F{blue}│%f"
+        print -P "%F{blue}│%f   %F{green}git switch <name>%f  %F{240}- Auf existing Branch wechseln%f  %F{blue}│%f"
+        print -P "%F{blue}│%f %B%F{yellow}Terraform%f%b                                            %F{blue}│%f"
+        print -P "%F{blue}│%f   %F{green}terraform init%f  %F{240}- Initialize Terraform environment%  %F{blue}│%f"
+        print -P "%F{blue}╰──────────────────────────────────────────────────────╯%f"
+        echo ""
+    }
+fi
+#set color if on tmux
+#if [[ "$TERM_PROGRAM" == "tmux" ]]; then
+#	export TERM="xterm-256color"
+#fi
+if [[ "$HOST" == "dylanMain" ]]; then
+	export XDG_RUNTIME_DIR=/tmp/discord-ipc
+	NPIPERELAY="/mnt/c/tools/npiperelay.exe"
+	if [ -f "$NPIPERELAY" ]; then
+    		# Prüfen ob socat installiert ist
+    		if command -v socat &> /dev/null; then
+        		# Verzeichnis erstellen
+        		mkdir -p "$XDG_RUNTIME_DIR"
+        
+        		# Prüfen ob die Brücke schon läuft, wenn nicht: starten
+        		if ! pgrep -f "npiperelay.exe" > /dev/null; then
+            			# Alte Sockets aufräumen
+            			rm -f "$XDG_RUNTIME_DIR/discord-ipc-0"
+            
+            			# Brücke im Hintergrund starten (stummgeschaltet)
+            			(socat UNIX-LISTEN:"$XDG_RUNTIME_DIR/discord-ipc-0",fork,mode=777 EXEC:"$NPIPERELAY -ep -s //./pipe/discord-ipc-0",nofork &) > /dev/null 2>&1
+        		fi
+    		fi
+	fi
+fi
