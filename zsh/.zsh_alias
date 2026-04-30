@@ -5,3 +5,4 @@ alias d_init="bash /home/kulka/.env/init_docker.sh"
 alias d_start="bash /home/kulka/.env/start.sh"
 alias pv="source ./.venv/bin/activate"
 alias python=python3
+
